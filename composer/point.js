@@ -1,30 +1,14 @@
-let cardStore = require('composer-common').FileSystemCardStore;
-let businessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+let Connection = require('./connection');
 let uuid = require('uuid/v1');
 
-const cardName = 'admin@dek-network';
-const cardType = {
-    type: 'composer-wallet-filesystem'
-};
-let connection = {};
 
-async function getConnection() {
-    console.log('connection');
-    this.connection = new businessNetworkConnection(cardType);
-    let myConnection = await this.connection.connect(cardName);
-}
+let transferPoint = async function (info) {
 
-async function getDisconnection() {
-    console.log('disconnect');
-    await this.connection.disconnect();
-}
-
-let transferPoint = async function (info){
-
-    console.lof('transaferPoint transaction');
+    console.log('transaferPoint transaction');
+    let connection = await Connection.getConnection();
     try {
-        await getConnection();
-        let bnDef = this.connection.getBusinessNetwork();
+
+        let bnDef = connection.getBusinessNetwork();
         let factory = bnDef.getFactory();
 
         let pointTrans = factory.newTransaction('org.dek.network', 'TransferPoint');
@@ -34,16 +18,19 @@ let transferPoint = async function (info){
         pointTrans.setPropertyValue('toCardId', info.toCardId);
         pointTrans.setPropertyValue('toPoint', info.toPoint);
 
-        let transactionStatus = await this.connection.submitTransaction(pointTrans);
+        await connection.submitTransaction(pointTrans);
 
-        console.log(transactionStatus);
-        getDisconnection();
+        await Connection.getDisconnection();
 
-        return Promise.resolve(transactionStatus);
+        return Promise.resolve(true);
     } catch (e) {
+
+        await Connection.getDisconnection();
         return Promise.reject(e);
     }
 
 }
 
-transferPoint();
+module.exports = {
+    transferPoint
+}
