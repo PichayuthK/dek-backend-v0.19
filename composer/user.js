@@ -51,8 +51,14 @@ let getUser  = async function (citizenId){
         let queriedUser = await connection.query( userQuery, { citizenId: citizenId });
 
         await Connection.getDisconnection();
-        if(queriedUser[0]){
-            return Promise.resolve(queriedUser);
+        let myUser = queriedUser[0];
+        if(myUser){
+            return Promise.resolve({
+                userId: myUser['userId'],
+                citizenId: myUser['citizenId'],
+                firstname: myUser['firstname'],
+                lastname: myUser['lastname']
+            });
         }else{
             return Promise.resolve([]);
         }

@@ -1,5 +1,7 @@
 let uuid = require('uuid/v1');
 let Connection = require('./connection');
+let moment = require('moment');
+let _ = require('lodash');
 
 let addCard = async function (info) {
 
@@ -77,8 +79,61 @@ var getUserAllCards = async function (userId) {
         });
 
         await Connection.getDisconnection();
-        console.log(queriedCards);
-        return await queriedCards;
+        //console.log(queriedCards);
+        let userCards = [];
+        queriedCards.forEach(e => {
+            userCards.push({
+                cardId: e.cardId,
+                userId: e.userId,
+                cardNumber: e.cardNumber,
+                royaltyProgramId: e.royaltyProgramId,
+                point: e.point
+            });
+        });
+        return Promise.resolve(userCards);
+
+    } catch (e) {
+        await Connection.getDisconnection();
+        return Promise.reject(e);
+    }
+}
+
+var getCardHistory = async function (userId, cardId) {
+    console.log('getUserAllCard function');
+    let connection = await Connection.getConnection();
+    try {
+        var statement = "SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'org.dek.network.TransferPoint')"; 
+        var cardQuery = await connection.buildQuery(statement);
+        var queriedCards = await connection.query(cardQuery);
+
+        await Connection.getDisconnection();
+
+        var cardHistoryList = [];
+        queriedCards.forEach((x) => {
+            var item = x['eventsEmitted'][0];
+            // console.log(item);
+            if (item != null) {
+                cardHistoryList.push({
+                    userId: item['userId'],
+                    oldCardId: item['oldCardId'],
+                    updateCardId: item['newCardId'],
+                    fromPoint: item['oldPoint'],
+                    toPoint: item['newPoint'],
+                    dateTime: new moment(item['timestamp']).format('YYYY-MM-DD HH:mm:ss'),
+                    oldCardRoyaltyProgramId: item['oldCardRoyaltyProgramId'],
+                    newCardRoyaltyProgramId: item['newCardRoyaltyProgramId']
+                });
+            }
+
+        });
+
+        cardHistoryList = cardHistoryList.filter((x) => {
+            return x.userId == userId && x.oldCardId == cardId;
+        });
+        //console.log(cardHistoryList);
+        var sortTemp = _.orderBy(cardHistoryList, ['dateTime'], ['desc']);
+        
+        return Promise.resolve(sortTemp);
 
     } catch (e) {
         await Connection.getDisconnection();
@@ -88,12 +143,7 @@ var getUserAllCards = async function (userId) {
 
 module.exports = {
     addCard,
-    getUserAllCards
+    getUserAllCards,
+    getCardHistory
 }
 
-// addCard({
-//     userId: '1',
-//     cardNumber: '1111-1111',
-//     point: '1000',
-//     royaltyProgramId: '1'
-// });
