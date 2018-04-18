@@ -53,3 +53,12 @@ let generateSeed = async () => {
 }
 
 generateSeed();
+
+   // let newUser = new User(body);
+//     try {
+//         let userResult = await newUser.save();
+//         console.log(userResult);
+//        res.send(await userResult);
+//     } catch (e) {
+//        res.status(404).send(e);
+//    }
