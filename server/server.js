@@ -8,6 +8,10 @@ let {
 let {
     mongoose
 } = require('./../db/mongoose');
+let {
+    RoyaltyProgram
+} = require('./../db/models/royaltyProgram');
+
 
 let app = express();
 
@@ -34,9 +38,32 @@ app.post('/user', async (req, res) => {
     }
 });
 
+/** Royalty Program **/
 
+app.get('/royal', async (req,res) => {
+    res.send(await RoyaltyProgram.getRoyaltyPromgramList());
+});
 
+app.get('/royal/:name', async(req,res) => {
+    let rpName = req.params.name;
+    res.send(await RoyaltyProgram.getRoyaltyProgram(rpName));
+});
 
+app.post('/royal', async(req,res) => {
+    const body = _.pick(req.body, ['name','img','vendor','termAndCondition']);
+    console.log(body);
+    try{
+        res.send(await RoyaltyProgram.addRoyaltyProgram(body));
+    }catch(e){
+        res.status(404).send(e);
+    }
+});
+
+/** Card **/
+
+app.post('/card', async (req,res) => {
+    const body = _.pick(req.body, ['userId','cardNumber','royaltyProgramId'])
+});
 
 
 app.listen(port, () => {
