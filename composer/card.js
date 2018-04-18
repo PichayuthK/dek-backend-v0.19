@@ -90,10 +90,11 @@ var getUserCard = async function (cardNumber) {
                 point: e.point
             });
         });
-        console.log(userCards[0]);
+        //console.log(userCards[0]);
         return Promise.resolve(userCards[0]);
 
     } catch (e) {
+        console.log('error getUserCard');
         await Connection.getDisconnection();
         return Promise.reject(e);
     }

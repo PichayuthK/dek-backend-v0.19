@@ -1,4 +1,8 @@
 var mongoose = require('mongoose');
+let composerCard = require('./../../composer/card');
+let {
+    RoyaltyProgram
+} = require('./royaltyProgram');
 
 let CardSchema = new mongoose.Schema({
     cardNumber:{
@@ -34,6 +38,34 @@ CardSchema.statics.getCard = async function (cardNumber) {
         return await Card.findOne({
             cardNumber: cardNumber
         });
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+
+CardSchema.statics.getUserAllCards = async function (userId) {    
+    let Card = this;
+    try {
+        let cpCard = await composerCard.getUserAllCards(userId);
+        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
+
+        let mapUserCards = [];
+        cpCard.forEach(card => {
+            rpList.forEach(rp => {
+                if(rp.royaltyProgramId == card.royaltyProgramId){
+                    let temp = Object.assign({
+                        royaltyProgramName: rp.name,
+                        img:rp.img,
+                        vendor: rp.vendor
+                    },card);
+                    mapUserCards.push(temp);
+                }
+            });
+        });
+
+        return Promise.resolve(mapUserCards);
+
     } catch (e) {
         return Promise.reject(e);
     }

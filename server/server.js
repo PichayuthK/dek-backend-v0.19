@@ -75,7 +75,7 @@ app.get('/royal/:name', async(req,res) => {
 app.get('/card/:userId', async (req,res) => {
     let userId = req.params.userId;
     try{
-        res.send(await composerCard.getUserAllCards(userId));
+        res.send(await Card.getUserAllCards(userId));
     }catch(e){
         res.status(404).send(e);
     }
@@ -86,6 +86,7 @@ app.post('/card', async (req,res) => {
     console.log(body);
     try{
         let existingCard = await composerCard.getUserCard(body.cardNumber);
+        console.log(`existingCard: ${existingCard}`);
         if(existingCard){
             res.send(existingCard);
         }else{
