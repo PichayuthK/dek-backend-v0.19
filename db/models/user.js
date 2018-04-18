@@ -1,4 +1,6 @@
 let mongoose = require('mongoose');
+let _ = require('lodash');
+let composerUser = require('./../../composer/user');
 
 let UserSchema = new mongoose.Schema({
     username: {
@@ -45,7 +47,21 @@ UserSchema.statics.getUser = async function (citizenId) {
     } catch (e) {
         return Promise.reject(e);
     }
-}
+};
+
+UserSchema.statics.checkUserCredential = async function ({username, password}) {    
+    let User = this;
+    try {
+        let userResult = await User.findOne({ username: username, password: password });
+        if(userResult){
+            return await composerUser.getUser(userResult.citizenId);
+        }else{
+            return {};
+        }
+    } catch (e) {
+        return Promise.reject(e);
+    }
+};
 
 let User = mongoose.model('User', UserSchema);
 

@@ -1,38 +1,39 @@
 const mongoose = require('mongoose');
+let composerRoyaltyProgram = require('./../../composer/royaltyProgram');
 
 let RoyaltyPromgramSchema = new mongoose.Schema({
-    name:{
-        type:String
+    name: {
+        type: String
     },
-    img:{
-        type:String
+    img: {
+        type: String
     },
-    vendor:{
-        type:String
+    vendor: {
+        type: String
     },
-    termAndCondition:{
+    termAndCondition: {
         type: String,
-        trim:true
+        trim: true
     }
 });
 
-RoyaltyPromgramSchema.statics.addRoyaltyProgram = async function (rp){
+RoyaltyPromgramSchema.statics.addRoyaltyProgram = async function (rp) {
     rp.name = rp.name.toUpperCase();
     rp.vendor = rp.vendor.toUpperCase();
     var newRP = new this(rp);
-    try{
-        let existRP = await this.getRoyaltyPromgram(rp.name);      
+    try {
+        let existRP = await this.getRoyaltyPromgram(rp.name);
         if (existRP) {
             return existRP
         } else {
             return await newRP.save();
         }
-    }catch(e){
+    } catch (e) {
         return Promise.reject(e);
     }
 };
 
-RoyaltyPromgramSchema.statics.getRoyaltyPromgram = async function (rpName) {    
+RoyaltyPromgramSchema.statics.getRoyaltyPromgram = async function (rpName) {
     rpName = rpName.toUpperCase();
     let RoyaltyProgram = this;
     try {
@@ -45,11 +46,33 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgram = async function (rpName) {
 }
 
 
-RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {    
-
+RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {
+    console.log('get rp list');
     let RoyaltyProgram = this;
     try {
-        return await RoyaltyProgram.find();
+        let dbRoyaltyProgram = (await RoyaltyProgram.find({}));
+        console.log(dbRoyaltyProgram);
+        let cpRoyaltyProgram = await composerRoyaltyProgram.getRoyaltyProgramList();
+      //  console.log(cpRoyaltyProgram);
+
+        let mappingRP = [];
+        dbRoyaltyProgram.forEach(rp => {
+            cpRoyaltyProgram.forEach(e => {
+                //console.log(`rp: ${rp.name} | compsoerRP: ${e.royaltyProgramName}`);
+                if (rp.name == e.royaltyProgramName) {
+                    let temp = {
+                        royaltyProgramId: e.royaltyProgramId,
+                        name: rp.name,
+                        img: rp.img,
+                        vendor: rp.vendor,
+                        termAndCondition: rp.termAndCondition
+                    };
+                    mappingRP.push(temp);
+                }
+            });
+        });
+        console.log(mappingRP);
+        return Promise.resolve(mappingRP);
     } catch (e) {
         return Promise.reject(e);
     }
@@ -57,4 +80,6 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {
 
 var RoyaltyProgram = mongoose.model('RoyaltyProgram', RoyaltyPromgramSchema);
 
-module.exports = { RoyaltyProgram }
+module.exports = {
+    RoyaltyProgram
+}

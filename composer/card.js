@@ -68,6 +68,37 @@ var checkExistingCard = async function (cardNumber) {
 
 }
 
+var getUserCard = async function (cardNumber) {
+    console.log('getUserCard function');
+    let connection = await Connection.getConnection();
+    try {
+        var statement = 'SELECT  org.dek.network.Card WHERE (cardNumber == _$cardNumber)';
+        var cardQuery = await connection.buildQuery(statement);
+        var queriedCards = await connection.query(cardQuery, {
+            cardNumber: cardNumber
+        });
+
+        await Connection.getDisconnection();
+        //console.log(queriedCards);
+        let userCards = [];
+        queriedCards.forEach(e => {
+            userCards.push({
+                cardId: e.cardId,
+                userId: e.userId,
+                cardNumber: e.cardNumber,
+                royaltyProgramId: e.royaltyProgramId,
+                point: e.point
+            });
+        });
+        console.log(userCards[0]);
+        return Promise.resolve(userCards[0]);
+
+    } catch (e) {
+        await Connection.getDisconnection();
+        return Promise.reject(e);
+    }
+}
+
 var getUserAllCards = async function (userId) {
     console.log('getUserAllCard function');
     let connection = await Connection.getConnection();
@@ -83,7 +114,7 @@ var getUserAllCards = async function (userId) {
         let userCards = [];
         queriedCards.forEach(e => {
             userCards.push({
-                cardId: e.cardId,
+                cardId: e.cardIexistingCardd,
                 userId: e.userId,
                 cardNumber: e.cardNumber,
                 royaltyProgramId: e.royaltyProgramId,
@@ -99,7 +130,7 @@ var getUserAllCards = async function (userId) {
 }
 
 var getCardHistory = async function (userId, cardId) {
-    console.log('getUserAllCard function');
+    console.log('getCardHistory function');
     let connection = await Connection.getConnection();
     try {
         var statement = "SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'org.dek.network.TransferPoint')"; 
@@ -144,6 +175,7 @@ var getCardHistory = async function (userId, cardId) {
 module.exports = {
     addCard,
     getUserAllCards,
-    getCardHistory
+    getCardHistory,
+    getUserCard
 }
 

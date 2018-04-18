@@ -21,8 +21,8 @@ let addRoyaltyProgram = async function (info) {
         console.log('create transaction');
         let royalTrans = factory.newTransaction('org.dek.network', 'AddRoyaltyProgram');
         royalTrans.setPropertyValue('royaltyProgramId', uuid());
-        royalTrans.setPropertyValue('royaltyProgramName', info.royaltyProgramName);
-        royalTrans.setPropertyValue('vendorName', info.vendorName);
+        royalTrans.setPropertyValue('royaltyProgramName', info.royaltyProgramName.toUpperCase());
+        royalTrans.setPropertyValue('vendorName', info.vendorName.toUpperCase());
 
         await connection.submitTransaction(royalTrans);
 
@@ -64,6 +64,27 @@ var checkExistingRoyaltyProgram = async function (royaltyProgramName) {
 
 }
 
+var getRoyaltyProgramList = async function (royaltyProgramName) {
+    console.log('Check exsinting card');
+    let connection = await Connection.getConnection();
+    try {
+
+        var statement = 'SELECT  org.dek.network.RoyaltyProgram';
+        let cardQuery = await connection.buildQuery(statement);
+        let querieRP = await connection.query(cardQuery);
+
+        await Connection.getDisconnection();
+        //console.log(await querieRP);
+        return Promise.resolve(await querieRP);
+
+    } catch (e) {
+        await Connection.getDisconnection();
+        return Promise.reject(e);
+    }
+
+}
+
 module.exports = {
-    addRoyaltyProgram
+    addRoyaltyProgram,
+    getRoyaltyProgramList
 }
