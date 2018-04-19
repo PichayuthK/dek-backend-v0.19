@@ -49,11 +49,12 @@ CardSchema.statics.getUserAllCards = async function (userId) {
     try {
         let cpCard = await composerCard.getUserAllCards(userId);
         let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
-
+        console.log(cpCard,'\n');
+        console.log(rpList);
         let mapUserCards = [];
         cpCard.forEach(card => {
             rpList.forEach(rp => {
-                if(rp.royaltyProgramId == card.royaltyProgramId){
+                if(rp.royaltyProgramId == card.royaltyProgramId.trim()){
                     let temp = Object.assign({
                         royaltyProgramName: rp.name,
                         img:rp.img,

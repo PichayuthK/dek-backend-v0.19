@@ -31,13 +31,13 @@ UserSchema.statics.createUser = async function (user) {
         let existComposerUser = await composerUser.getUser(user.citizenId);  
         console.log(existUser,'\n');
         console.log(existComposerUser);
-        if (existUser && existComposerUser) {
+        if (existUser && !(_.isEmpty(existComposerUser))) {
             return existUser
         } else {
             if(!existUser){
                 await newUser.save();
             }
-            if(existComposerUser){
+            if(!(_.isEmpty(existComposerUser))){
                 return await existComposerUser;
             }else{
                 return await composerUser.addUser(_.pick(user, ['firstname','lastname','citizenId']));

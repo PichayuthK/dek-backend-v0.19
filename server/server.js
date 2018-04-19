@@ -14,7 +14,9 @@ let {
 let {
     Card
 } = require('./../db/models/card');
-
+let {
+    Partner
+} = require('./../db/models/partner');
 
 let composerCard = require('./../composer/card');
 let composerRoyaltyProgram = require('./../composer/royaltyProgram');
@@ -125,7 +127,18 @@ app.get('/history/card/:userId/:cardId', async (req,res) => {
     res.send(await Card.getCardHistory(userId,cardId));
 });
 
+/** partner **/
+app.post('/init/partner', async (req,res) => {
+    let body = _.pick(req.body,['fromRate','toRate','minimum','maximum','perRound','fromPartnerName','toPartnerName']);
+
+});
+
  /** INIT **/
+ app.post('/init/partner', async (req,res) => {
+    let body = _.pick(req.body,['fromRate','toRate','minimum','maximum','perRound','fromPartnerName','toPartnerName']);
+    res.send(await Partner.addPartner(body));
+});
+
  app.post('/init/card', async (req,res) => {
     const body = _.pick(req.body, ['cardNumber','royaltyProgramName','point']);
     console.log(body);
