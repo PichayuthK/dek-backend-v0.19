@@ -18,6 +18,7 @@ let {
 
 let composerCard = require('./../composer/card');
 let composerRoyaltyProgram = require('./../composer/royaltyProgram');
+let composerPoint = require('./../composer/point');
 
 let app = express();
 
@@ -110,7 +111,19 @@ app.post('/card', async (req,res) => {
 
 });
 
+/** transfer point **/
+app.post('/transfer/point', async (req,res)=>{
+    let body = _.pick(req.body,['userId','fromCardId','fromPoint','toCardId','toPoint']);
+    res.send(await composerPoint.transferPoint(body));
 
+});
+
+/** card history **/
+app.get('/history/card/:userId/:cardId', async (req,res) => {
+    let userId = req.params.userId;
+    let cardId = req.params.cardId;
+    res.send(await Card.getCardHistory(userId,cardId));
+});
 
  /** INIT **/
  app.post('/init/card', async (req,res) => {

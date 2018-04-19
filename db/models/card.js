@@ -71,6 +71,51 @@ CardSchema.statics.getUserAllCards = async function (userId) {
     }
 }
 
+CardSchema.statics.getCardHistory = async function (userId, cardId) {    
+    let Card = this;
+    try {
+        let cpCard = await composerCard.getCardHistory(userId,cardId);
+        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
+
+        let mapUserOldCards = [];
+        cpCard.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.oldCardRoyaltyProgramId){
+                    let temp = Object.assign({
+                        oldRoyaltyProgramName: rp.name,
+                        oldRoyaltyProgramImg:rp.img,
+                        oldRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserOldCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        let mapUserNewCards = [];
+        mapUserOldCards.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.newCardRoyaltyProgramId){
+                    let temp = Object.assign({
+                        newRoyaltyProgramName: rp.name,
+                        newRoyaltyProgramImg:rp.img,
+                        newRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserNewCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        return Promise.resolve(mapUserNewCards);
+
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
 var Card = mongoose.model('Card', CardSchema);
 
 module.exports = {

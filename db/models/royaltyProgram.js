@@ -51,7 +51,7 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {
     let RoyaltyProgram = this;
     try {
         let dbRoyaltyProgram = (await RoyaltyProgram.find({}));
-        console.log(dbRoyaltyProgram);
+       // console.log(dbRoyaltyProgram);
         let cpRoyaltyProgram = await composerRoyaltyProgram.getRoyaltyProgramList();
       //  console.log(cpRoyaltyProgram);
 
@@ -71,7 +71,7 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {
                 }
             });
         });
-        console.log(mappingRP);
+       // console.log('mappingRP: ',mappingRP);
         return Promise.resolve(mappingRP);
     } catch (e) {
         return Promise.reject(e);

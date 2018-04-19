@@ -115,11 +115,11 @@ var getUserAllCards = async function (userId) {
         let userCards = [];
         queriedCards.forEach(e => {
             userCards.push({
-                cardId: e.cardIexistingCardd,
+                cardId: e.cardId,
                 userId: e.userId,
                 cardNumber: e.cardNumber,
                 royaltyProgramId: e.royaltyProgramId,
-                point: e.point
+                point: e.point,
             });
         });
         return Promise.resolve(userCards);
@@ -162,9 +162,8 @@ var getCardHistory = async function (userId, cardId) {
         cardHistoryList = cardHistoryList.filter((x) => {
             return x.userId == userId && x.oldCardId == cardId;
         });
-        //console.log(cardHistoryList);
         var sortTemp = _.orderBy(cardHistoryList, ['dateTime'], ['desc']);
-        
+        console.log('composer getCardHistory ',sortTemp);
         return Promise.resolve(sortTemp);
 
     } catch (e) {
