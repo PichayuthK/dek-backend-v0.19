@@ -29,6 +29,8 @@ UserSchema.statics.createUser = async function (user) {
     try {
         let existUser = await this.getUser(user.citizenId);    
         let existComposerUser = await composerUser.getUser(user.citizenId);  
+        console.log(existUser,'\n');
+        console.log(existComposerUser);
         if (existUser && existComposerUser) {
             return existUser
         } else {
