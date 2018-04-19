@@ -84,6 +84,7 @@ app.get('/card/:userId', async (req,res) => {
     }
 });
 
+
 app.post('/card', async (req,res) => {
     const body = _.pick(req.body, ['userId','cardNumber','royaltyProgramId','userId']);
     console.log(body);
@@ -128,14 +129,23 @@ app.get('/history/card/:userId/:cardId', async (req,res) => {
 });
 
 /** partner **/
-app.post('/init/partner', async (req,res) => {
-    let body = _.pick(req.body,['fromRate','toRate','minimum','maximum','perRound','fromPartnerName','toPartnerName']);
+app.get('/partner/:rpName', async(req,res) => {
+    let rpName = req.params.rpName;
+    console.log(rpName);
+    res.send(await Partner.getPartnerList(rpName));
+});
+
+app.get('/partner/card/:royaltyProgramName/:userId/',async(req,res) => {
+    let royaltyProgramName = req.params.royaltyProgramName;
+    let userId = req.params.userId;
+    res.send(await Card.getCardByRoyaltyProgram(userId,royaltyProgramName));
 
 });
 
  /** INIT **/
  app.post('/init/partner', async (req,res) => {
     let body = _.pick(req.body,['fromRate','toRate','minimum','maximum','perRound','fromPartnerName','toPartnerName']);
+    console.log(body);
     res.send(await Partner.addPartner(body));
 });
 

@@ -3,6 +3,8 @@ let composerCard = require('./../../composer/card');
 let {
     RoyaltyProgram
 } = require('./royaltyProgram');
+let composerRoyaltyProgram = require('./../../composer/royaltyProgram');
+
 
 let CardSchema = new mongoose.Schema({
     cardNumber:{
@@ -25,7 +27,7 @@ CardSchema.statics.addCard = async function (card) {
         if (existCard) {
             return existCard
         } else {
-            return await newCard.save();
+            return await newCard.saveuserCards();
         }
     } catch (e) {
         return Promise.reject(e);
@@ -43,6 +45,23 @@ CardSchema.statics.getCard = async function (cardNumber) {
     }
 }
 
+CardSchema.statics.getCardByRoyaltyProgram = async function (userId, rpName) {    
+    let Card = this;
+    
+    try {
+        let composerRoyal = await composerRoyaltyProgram.getRoyaltyProgramByName(rpName);
+        let userRPCardList = await composerCard.getUserRoyaltyProgramCard(userId, composerRoyal[0].royaltyProgramId);
+        let royaltyName = await RoyaltyProgram.getRoyaltyPromgram(rpName);
+        let mapUserCards = {
+            royaltyProgramInfo: royaltyName,
+            userCardlist: userRPCardList
+        };
+        return Promise.resolve(mapUserCards);
+
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
 
 CardSchema.statics.getUserAllCards = async function (userId) {    
     let Card = this;

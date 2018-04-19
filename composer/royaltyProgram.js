@@ -64,12 +64,34 @@ var checkExistingRoyaltyProgram = async function (royaltyProgramName) {
 
 }
 
-var getRoyaltyProgramList = async function (royaltyProgramName) {
-    console.log('Check exsinting card');
+var getRoyaltyProgramByName = async function (royaltyProgramName) {
+    console.log('royaltyProgramByName card');
     let connection = await Connection.getConnection();
     try {
 
-        var statement = 'SELECT  org.dek.network.RoyaltyProgram';
+        var statement = 'SELECT  org.dek.network.RoyaltyProgram WHERE (royaltyProgramName == _$royaltyProgramName)';
+        let cardQuery = await connection.buildQuery(statement);
+        let querieCard = await connection.query(cardQuery, {
+            royaltyProgramName: royaltyProgramName
+        });
+
+        await Connection.getDisconnection();
+        //console.log(await querieRP);
+        return Promise.resolve(await querieCard);
+
+    } catch (e) {
+        await Connection.getDisconnection();
+        return Promise.reject(e);
+    }
+
+}
+
+var getRoyaltyProgramList = async function (royaltyProgramName) {
+    console.log('royaltyProgramList card');
+    let connection = await Connection.getConnection();
+    try {
+
+        var statement = 'SELECT org.dek.network.RoyaltyProgram';
         let cardQuery = await connection.buildQuery(statement);
         let querieRP = await connection.query(cardQuery);
 
@@ -86,5 +108,6 @@ var getRoyaltyProgramList = async function (royaltyProgramName) {
 
 module.exports = {
     addRoyaltyProgram,
-    getRoyaltyProgramList
+    getRoyaltyProgramList,
+    getRoyaltyProgramByName
 }
