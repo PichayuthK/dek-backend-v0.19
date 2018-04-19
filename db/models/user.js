@@ -27,11 +27,19 @@ let UserSchema = new mongoose.Schema({
 UserSchema.statics.createUser = async function (user) {
     let newUser = new this(user);
     try {
-        let existUser = await this.getUser(user.citizenId);      
-        if (existUser) {
+        let existUser = await this.getUser(user.citizenId);    
+        let existComposerUser = await composerUser.getUser(user.citizenId);  
+        if (existUser && existComposerUser) {
             return existUser
         } else {
-            return await newUser.save();
+            if(!existUser){
+                await newUser.save();
+            }
+            if(existComposerUser){
+                return await existComposerUser;
+            }else{
+                return await composerUser.addUser(_.pick(user, ['firstname','lastname','citizenId']));
+            }
         }
     } catch (e) {
         return Promise.reject(e);

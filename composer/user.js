@@ -60,7 +60,7 @@ let getUser  = async function (citizenId){
                 lastname: myUser['lastname']
             });
         }else{
-            return Promise.resolve([]);
+            return Promise.resolve({});
         }
 
 
