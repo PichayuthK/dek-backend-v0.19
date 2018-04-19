@@ -51,6 +51,9 @@ CardSchema.statics.getCardByRoyaltyProgram = async function (userId, rpName) {
     try {
         let composerRoyal = await composerRoyaltyProgram.getRoyaltyProgramByName(rpName);
         let userRPCardList = await composerCard.getUserRoyaltyProgramCard(userId, composerRoyal[0].royaltyProgramId);
+        if (userRPCardList.length < 1){
+            return Promise.resolve([]);
+        }
         let royaltyName = await RoyaltyProgram.getRoyaltyPromgram(rpName);
         let mapUserCards = {
             royaltyProgramInfo: royaltyName,
@@ -101,7 +104,7 @@ CardSchema.statics.getCardHistory = async function (userId, cardId) {
         cpCard.forEach(card => {
             rpList.forEach(rp => {
                 //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
-                if(rp.royaltyProgramId == card.oldCardRoyaltyProgramId){
+                if(rp.royaltyProgramId == card.oldCardRoyaltyProgramId.trim()){
                     let temp = Object.assign({
                         oldRoyaltyProgramName: rp.name,
                         oldRoyaltyProgramImg:rp.img,
@@ -117,7 +120,7 @@ CardSchema.statics.getCardHistory = async function (userId, cardId) {
         mapUserOldCards.forEach(card => {
             rpList.forEach(rp => {
                 //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
-                if(rp.royaltyProgramId == card.newCardRoyaltyProgramId){
+                if(rp.royaltyProgramId == card.newCardRoyaltyProgramId.trim()){
                     let temp = Object.assign({
                         newRoyaltyProgramName: rp.name,
                         newRoyaltyProgramImg:rp.img,
