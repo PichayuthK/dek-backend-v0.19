@@ -71,7 +71,6 @@ let getUser  = async function (citizenId){
 
 }
 
-
 // async function testGetUser() {
 //     let user = await getUser('3091');
 //     console.log(user[0]);

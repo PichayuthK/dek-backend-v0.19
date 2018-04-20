@@ -139,7 +139,20 @@ app.get('/partner/card/:royaltyProgramName/:userId/',async(req,res) => {
     let royaltyProgramName = req.params.royaltyProgramName;
     let userId = req.params.userId;
     res.send(await Card.getCardByRoyaltyProgram(userId,royaltyProgramName));
+});
 
+/** vendor **/
+app.get('/vendor/history/user/:citizenId/:rpId', async (req,res)=>{
+    let citizenId = req.params.citizenId;
+    let rpId = req.params.rpId;
+    console.log(citizenId, ':', rpId);
+    res.send(await RoyaltyProgram.getRoyaltyPromgramPointTransferByUser(citizenId, rpId));
+});
+
+app.get('/vendor/history/:rpId', async (req,res)=>{
+    let rpId = req.params.rpId;
+    console.log(':', rpId);
+    res.send(await RoyaltyProgram.getRoyaltyPromgramPointTransferByVendor(rpId));
 });
 
  /** INIT **/

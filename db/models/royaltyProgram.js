@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 let composerRoyaltyProgram = require('./../../composer/royaltyProgram');
+let composerUser = require('./../../composer/user');
+let composerPoint = require('./../../composer/point');
 
 let RoyaltyPromgramSchema = new mongoose.Schema({
     name: {
@@ -78,8 +80,126 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {
     }
 }
 
+RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByVendor = async function (rpId) {    
+    try {
+        let user = await composerUser.getUser(citizenId);
+        if(user.length < 1){
+            return Promise.resolve([]);
+        }
+        let userPointTransferList = await getPoinTransferHistoryByVendor(rpId);
+        //let cpCard = await composerCard.getCardHistory(userId,cardId);
+        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
+
+        let mapUserOldCards = [];
+        userPointTransferList.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.oldCardRoyaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        oldRoyaltyProgramName: rp.name,
+                        oldRoyaltyProgramImg:rp.img,
+                        oldRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserOldCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        let mapUserNewCards = [];
+        mapUserOldCards.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.newCardRoyaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        newRoyaltyProgramName: rp.name,
+                        newRoyaltyProgramImg:rp.img,
+                        newRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserNewCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        return Promise.resolve(mapUserNewCards);
+
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+
+
+RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByUser = async function (citizenId, rpId) {    
+    try {
+        let user = await composerUser.getUser(citizenId);
+        if(user.length < 1){
+            return Promise.resolve([]);
+        }
+        let userPointTransferList = await getUserPoinTransferHistoryByVendor(user[0].userId, rpId);
+        //let cpCard = await composerCard.getCardHistory(userId,cardId);
+        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
+
+        let mapUserOldCards = [];
+        userPointTransferList.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.oldCardRoyaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        oldRoyaltyProgramName: rp.name,
+                        oldRoyaltyProgramImg:rp.img,
+                        oldRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserOldCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        let mapUserNewCards = [];
+        mapUserOldCards.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.newCardRoyaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        newRoyaltyProgramName: rp.name,
+                        newRoyaltyProgramImg:rp.img,
+                        newRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserNewCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        return Promise.resolve(mapUserNewCards);
+
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
 var RoyaltyProgram = mongoose.model('RoyaltyProgram', RoyaltyPromgramSchema);
 
 module.exports = {
     RoyaltyProgram
 }
+
+
+// RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByUser = async function (citizenId, rpId) {
+//     console.log('getRoyaltyPromgramPointTransferByUser');
+//     let RoyaltyProgram = this;
+//     try {
+//         let user = await composerUser.getUser(citizenId);
+//         if(user.length < 1){
+//             return Promise.resolve([]);
+//         }else{
+//             let userPointTransferList = await getUserPoinTransferHistoryByVendor(user[0].userId, rpId);
+
+//         }
+//         return Promise.resolve(mappingRP);
+//     } catch (e) {
+//         return Promise.reject(e);
+//     }
+// }
