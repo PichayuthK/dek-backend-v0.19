@@ -80,13 +80,54 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramList = async function () {
     }
 }
 
-RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByVendor = async function (rpId) {    
+RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferFromVendor = async function (rpId) {    
     try {
-        let user = await composerUser.getUser(citizenId);
-        if(user.length < 1){
-            return Promise.resolve([]);
-        }
-        let userPointTransferList = await getPoinTransferHistoryByVendor(rpId);
+        let userPointTransferList = await composerPoint.getPoinTransferHistoryFromVendor(rpId);
+        //let cpCard = await composerCard.getCardHistory(userId,cardId);
+        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
+
+        let mapUserOldCards = [];
+        userPointTransferList.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.oldCardRoyaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        oldRoyaltyProgramName: rp.name,
+                        oldRoyaltyProgramImg:rp.img,
+                        oldRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserOldCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        let mapUserNewCards = [];
+        mapUserOldCards.forEach(card => {
+            rpList.forEach(rp => {
+                //console.log(rp.royaltyProgramId,' : ', card.oldCardRoyaltyProgramId);
+                if(rp.royaltyProgramId == card.newCardRoyaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        newRoyaltyProgramName: rp.name,
+                        newRoyaltyProgramImg:rp.img,
+                        newRoyaltyProgramVendor: rp.vendor
+                    },card);
+                    mapUserNewCards.push(temp);
+                    //console.log('temp: ',temp);
+                }
+            });
+        });
+
+        return Promise.resolve(mapUserNewCards);
+
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferToVendor = async function (rpId) {    
+    try {
+        let userPointTransferList = await composerPoint.getPoinTransferHistoryToVendor(rpId);
         //let cpCard = await composerCard.getCardHistory(userId,cardId);
         let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
 
@@ -130,14 +171,13 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByVendor = async fu
 }
 
 
-
 RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByUser = async function (citizenId, rpId) {    
     try {
         let user = await composerUser.getUser(citizenId);
         if(user.length < 1){
             return Promise.resolve([]);
         }
-        let userPointTransferList = await getUserPoinTransferHistoryByVendor(user[0].userId, rpId);
+        let userPointTransferList = await composerPoint.getUserPoinTransferHistoryByVendor(user.userId, rpId);
         //let cpCard = await composerCard.getCardHistory(userId,cardId);
         let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
 

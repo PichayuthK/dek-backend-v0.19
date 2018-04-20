@@ -149,10 +149,16 @@ app.get('/vendor/history/user/:citizenId/:rpId', async (req,res)=>{
     res.send(await RoyaltyProgram.getRoyaltyPromgramPointTransferByUser(citizenId, rpId));
 });
 
-app.get('/vendor/history/:rpId', async (req,res)=>{
+app.get('/vendor/history/from/:rpId', async (req,res)=>{
     let rpId = req.params.rpId;
     console.log(':', rpId);
-    res.send(await RoyaltyProgram.getRoyaltyPromgramPointTransferByVendor(rpId));
+    res.send(await RoyaltyProgram.getRoyaltyPromgramPointTransferFromVendor(rpId));
+});
+
+app.get('/vendor/history/to/:rpId', async (req,res)=>{
+    let rpId = req.params.rpId;
+    console.log(':', rpId);
+    res.send(await RoyaltyProgram.getRoyaltyPromgramPointTransferToVendor(rpId));
 });
 
  /** INIT **/

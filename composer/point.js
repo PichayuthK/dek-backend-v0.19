@@ -1,6 +1,7 @@
 let Connection = require('./connection');
 let uuid = require('uuid/v1');
-
+let moment = require('moment');
+let _ = require('lodash');
 
 let transferPoint = async function (info) {
 
@@ -31,8 +32,8 @@ let transferPoint = async function (info) {
     }
 }
 
-var getPoinTransferHistoryByVendor = async function (royaltyProgramId) {
-    console.log('getPoinTransferHistoryByVendor function');
+var getPoinTransferHistoryFromVendor = async function (royaltyProgramId) {
+    console.log('getPoinTransferHistoryFromVendor function');
     let connection = await Connection.getConnection();
     try {
         var statement = "SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'org.dek.network.TransferPoint')"; 
@@ -64,7 +65,49 @@ var getPoinTransferHistoryByVendor = async function (royaltyProgramId) {
             return x.oldCardRoyaltyProgramId == royaltyProgramId;
         });
         var sortTemp = _.orderBy(cardHistoryList, ['dateTime'], ['desc']);
-        console.log('composer getPoinTransferHistoryByVendor ',sortTemp);
+        console.log('composer getPoinTransferHistoryFromVendor ',sortTemp);
+        return Promise.resolve(sortTemp);
+
+    } catch (e) {
+        await Connection.getDisconnection();
+        return Promise.reject(e);
+    }
+}
+
+var getPoinTransferHistoryToVendor = async function (royaltyProgramId) {
+    console.log('getPoinTransferHistoryFromVendor function');
+    let connection = await Connection.getConnection();
+    try {
+        var statement = "SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'org.dek.network.TransferPoint')"; 
+        var cardQuery = await connection.buildQuery(statement);
+        var queriedCards = await connection.query(cardQuery);
+
+        await Connection.getDisconnection();
+
+        var cardHistoryList = [];
+        queriedCards.forEach((x) => {
+            var item = x['eventsEmitted'][0];
+            // console.log(item);
+            if (item != null) {
+                cardHistoryList.push({
+                    userId: item['userId'],
+                    oldCardId: item['oldCardId'],
+                    updateCardId: item['newCardId'],
+                    fromPoint: item['oldPoint'],
+                    toPoint: item['newPoint'],
+                    dateTime: new moment(item['timestamp']).format('YYYY-MM-DD HH:mm:ss'),
+                    oldCardRoyaltyProgramId: item['oldCardRoyaltyProgramId'],
+                    newCardRoyaltyProgramId: item['newCardRoyaltyProgramId']
+                });
+            }
+
+        });
+
+        cardHistoryList = cardHistoryList.filter((x) => {
+            return x.newCardRoyaltyProgramId == royaltyProgramId;
+        });
+        var sortTemp = _.orderBy(cardHistoryList, ['dateTime'], ['desc']);
+        console.log('composer getPoinTransferHistoryFromVendor ',sortTemp);
         return Promise.resolve(sortTemp);
 
     } catch (e) {
@@ -118,5 +161,6 @@ var getUserPoinTransferHistoryByVendor = async function (userId, royaltyProgramI
 module.exports = {
     transferPoint,
     getUserPoinTransferHistoryByVendor,
-    getPoinTransferHistoryByVendor
+    getPoinTransferHistoryFromVendor,
+    getPoinTransferHistoryToVendor
 }
