@@ -23,22 +23,23 @@ CardSchema.statics.addCard = async function (card) {
     card.royaltyProgramName = card.royaltyProgramName.toUpperCase();
     let newCard = new this(card);
     try {
-        let existCard = await this.getCard(card.cardNumber);      
+        let existCard = await this.getCard(card.cardNumber, card.royaltyProgramName);      
         if (existCard) {
             return existCard
         } else {
-            return await newCard.saveuserCards();
+            return await newCard.save();
         }
     } catch (e) {
         return Promise.reject(e);
     }
 };
 
-CardSchema.statics.getCard = async function (cardNumber) {    
+CardSchema.statics.getCard = async function (cardNumber, royaltyProgramName) {    
     let Card = this;
     try {
         return await Card.findOne({
-            cardNumber: cardNumber
+            cardNumber: cardNumber,
+            royaltyProgramName: royaltyProgramName
         });
     } catch (e) {
         return Promise.reject(e);

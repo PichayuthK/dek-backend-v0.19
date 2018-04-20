@@ -86,7 +86,7 @@ app.get('/card/:userId', async (req,res) => {
 
 
 app.post('/card', async (req,res) => {
-    const body = _.pick(req.body, ['userId','cardNumber','royaltyProgramId','userId']);
+    const body = _.pick(req.body, ['userId','cardNumber','royaltyProgramId','userId','royaltyProgramName']);
     console.log(body);
     try{
         let existingCard = await composerCard.getUserCard(body.cardNumber);
@@ -94,7 +94,7 @@ app.post('/card', async (req,res) => {
         if(existingCard){
             res.send(existingCard);
         }else{
-            let cardInfo = await Card.getCard(body.cardNumber);
+            let cardInfo = await Card.getCard(body.cardNumber, royaltyProgramName);
             let newCard = await composerCard.addCard({
                 userId:body.userId,
                 cardNumber:body.cardNumber,
