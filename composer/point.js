@@ -4,7 +4,7 @@ let moment = require('moment');
 let _ = require('lodash');
 
 let composerCard = require('./card');
-let RoyaltyProgram = require('./../db/models/royaltyProgram');
+let RoyaltyProgram = require('./royaltyProgram');
 
 let transferPoint = async function (info) {
 
@@ -30,33 +30,37 @@ let transferPoint = async function (info) {
         console.log('transfer completed');
         let transferInfo = {}
         let fromCard = await composerCard.getCardInfo(info.fromCardId);
+	fromCard = fromCard[0];
         let toCard = await composerCard.getCardInfo(info.toCardId);
-        transferInfo.fromPoint = info.fromPoint;
+        toCard = toCard[0];
+	transferInfo.fromPoint = info.fromPoint;
         transferInfo.toPoint = info.toPoint;
-
-
-        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
-
+	//console.log(fromCard);
+	console.log('b4-rp');
+        let rpList = await RoyaltyProgram.getRoyaltyProgramList('a');
+//	console.log(rpList);
             rpList.forEach(rp => {
                 if(rp.royaltyProgramId == fromCard.royaltyProgramId.trim()){
                     let temp = Object.assign({
-                        fromRoyaltyProgramName: rp.name,
-                        fromRoyaltyProgramImg:rp.img,
-                        fromRoyaltyProgramVendor: rp.vendor
-                    },fromCard);
+                        fromRoyaltyProgramName: rp.royaltyProgramName,
+                        fromRoyaltyProgramPoint:fromCard.point,
+			fromRoyaltyProgramCardNumber: fromCard.cardNumber,
+                        fromRoyaltyProgramVendor: rp.vendorName
+                    });
                     transferInfo.fromCard = (temp);
                 }
                 if(rp.royaltyProgramId == toCard.royaltyProgramId.trim()){
                     let temp = Object.assign({
-                        toRoyaltyProgramName: rp.name,
-                        toRoyaltyProgramImg:rp.img,
-                        toRoyaltyProgramVendor: rp.vendor
-                    },toCard);
+                        toRoyaltyProgramName: rp.royaltyProgramName,
+                        fromRoyaltyProgramPoint:toCard.point,
+                        fromRoyaltyProgramCardNumber: toCard.cardNumber,
+                        toRoyaltyProgramVendor: rp.vendorName
+                    });
                     transferInfo.toCard = (temp);
                 }
             });
        
-
+	console.log(transferInfo);
         return Promise.resolve(transferInfo);
     } catch (e) {
 
