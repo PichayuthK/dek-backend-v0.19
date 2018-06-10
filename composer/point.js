@@ -4,6 +4,7 @@ let moment = require('moment');
 let _ = require('lodash');
 
 let composerCard = require('./card');
+let RoyaltyProgram = require('./../db/models/royaltyProgram');
 
 let transferPoint = async function (info) {
 
@@ -24,13 +25,38 @@ let transferPoint = async function (info) {
 
         await connection.submitTransaction(pointTrans);
 
+        // make retrun format
         await Connection.getDisconnection();
         console.log('transfer completed');
         let transferInfo = {}
-        transferInfo.fromCard = await composerCard.getCardInfo(info.fromCardId);
-        transferInfo.toCard = await composerCard.getCardInfo(info.toCardId);
+        let fromCard = await composerCard.getCardInfo(info.fromCardId);
+        let toCard = await composerCard.getCardInfo(info.toCardId);
         transferInfo.fromPoint = info.fromPoint;
         transferInfo.toPoint = info.toPoint;
+
+
+        let rpList = await RoyaltyProgram.getRoyaltyPromgramList();
+
+            rpList.forEach(rp => {
+                if(rp.royaltyProgramId == fromCard.royaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        fromRoyaltyProgramName: rp.name,
+                        fromRoyaltyProgramImg:rp.img,
+                        fromRoyaltyProgramVendor: rp.vendor
+                    },fromCard);
+                    transferInfo.fromCard = (temp);
+                }
+                if(rp.royaltyProgramId == toCard.royaltyProgramId.trim()){
+                    let temp = Object.assign({
+                        toRoyaltyProgramName: rp.name,
+                        toRoyaltyProgramImg:rp.img,
+                        toRoyaltyProgramVendor: rp.vendor
+                    },toCard);
+                    transferInfo.toCard = (temp);
+                }
+            });
+       
+
         return Promise.resolve(transferInfo);
     } catch (e) {
 
