@@ -203,11 +203,33 @@ var getCardHistory = async function (userId, cardId) {
     }
 }
 
+var getCardInfo = async function (cardId) {
+    console.log('getUserRoyaltyProgramCard function');
+    let connection = await Connection.getConnection();
+    try {
+        var statement = 'SELECT  org.dek.network.Card WHERE (cardId == _$cardId)';
+        var cardQuery = await connection.buildQuery(statement);
+        var queriedCards = await connection.query(cardQuery, {
+            cardId:cardId
+        });
+
+        await Connection.getDisconnection();
+       
+        return Promise.resolve(queriedCards);
+
+    } catch (e) {
+        await Connection.getDisconnection();
+        return Promise.reject(e);
+    }
+}
+
 module.exports = {
     addCard,
     getUserAllCards,
     getCardHistory,
     getUserCard,
-    getUserRoyaltyProgramCard
+    getUserRoyaltyProgramCard,
+    getCardInfo,
+    
 }
 

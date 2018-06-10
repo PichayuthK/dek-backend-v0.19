@@ -213,6 +213,8 @@ RoyaltyPromgramSchema.statics.getRoyaltyPromgramPointTransferByUser = async func
             });
         });
 
+        mapUserNewCards.userInfo = await composerUser.getUser(citizenId);
+
         return Promise.resolve(mapUserNewCards);
 
     } catch (e) {

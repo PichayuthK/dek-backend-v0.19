@@ -3,6 +3,8 @@ let uuid = require('uuid/v1');
 let moment = require('moment');
 let _ = require('lodash');
 
+let composerCard = require('./card');
+
 let transferPoint = async function (info) {
 
     console.log('transaferPoint transaction');
@@ -24,7 +26,12 @@ let transferPoint = async function (info) {
 
         await Connection.getDisconnection();
         console.log('transfer completed');
-        return Promise.resolve(true);
+        let transferInfo = {}
+        transferInfo.fromCard = await composerCard.getCardInfo(info.fromCardId);
+        transferInfo.toCard = await composerCard.getCardInfo(info.toCardId);
+        transferInfo.fromPoint = info.fromPoint;
+        transferInfo.toPoint = info.toPoint;
+        return Promise.resolve(transferInfo);
     } catch (e) {
 
         await Connection.getDisconnection();
