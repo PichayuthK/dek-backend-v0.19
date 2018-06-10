@@ -79,7 +79,7 @@ var getUserCard = async function (cardNumber) {
         });
 
         await Connection.getDisconnection();
-        //console.log(queriedCards);
+        console.log(queriedCards);
         let userCards = [];
         queriedCards.forEach(e => {
             userCards.push({
@@ -90,7 +90,7 @@ var getUserCard = async function (cardNumber) {
                 point: e.point
             });
         });
-        //console.log(userCards[0]);
+        console.log(userCards[0]);
         return Promise.resolve(userCards[0]);
 
     } catch (e) {

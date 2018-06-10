@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
+const cors = require('cors');
 
 let {
     User
@@ -24,6 +25,7 @@ let composerPoint = require('./../composer/point');
 
 let app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 const port = 3333;
 
@@ -94,7 +96,11 @@ app.post('/card', async (req,res) => {
         if(existingCard){
             res.send(existingCard);
         }else{
-            let cardInfo = await Card.getCard(body.cardNumber, royaltyProgramName);
+            let cardInfo = await Card.getCard(body.cardNumber, body.royaltyProgramName);
+	    if(_.isEmpty(cardInfo)){
+                console.log('cardinfo: ',cardInfo);
+		res.status(404).send();
+	    }
             let newCard = await composerCard.addCard({
                 userId:body.userId,
                 cardNumber:body.cardNumber,
@@ -109,7 +115,8 @@ app.post('/card', async (req,res) => {
         }
 
    }catch(e){
-       res.status(404).send(e);
+       console.log('error');
+       res.status(404).send();
    }
 
 });

@@ -4,7 +4,7 @@ let {
     RoyaltyProgram
 } = require('./royaltyProgram');
 let composerRoyaltyProgram = require('./../../composer/royaltyProgram');
-
+let _ = require('lodash');
 
 let CardSchema = new mongoose.Schema({
     cardNumber:{
@@ -24,7 +24,8 @@ CardSchema.statics.addCard = async function (card) {
     let newCard = new this(card);
     try {
         let existCard = await this.getCard(card.cardNumber, card.royaltyProgramName);      
-        if (existCard) {
+	console.log(existCard);
+        if (!(_.isEmpty(existCard))) {
             return existCard
         } else {
             return await newCard.save();
