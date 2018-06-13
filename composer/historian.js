@@ -1,6 +1,7 @@
 let uuid = require('uuid/v1');
 let Connection = require('./connection');
-
+let moment = require('moment');
+let _ = require('lodash');
 
 var getAllHistorian = async function () {
     console.log('getAllHistorian function');
@@ -23,21 +24,20 @@ var getAllHistorian = async function () {
             // var item = x['eventsEmitted'][0];
             // console.log(item);
             // if (item != null) {
-                // cardHistoryList.push({
-                //     userId: item['userId'],
-                //     oldCardId: item['oldCardId'],
-                //     updateCardId: item['newCardId'],
-                //     fromPoint: item['oldPoint'],
-                //     toPoint: item['newPoint'],
-                //     dateTime: new moment(item['timestamp']).format('YYYY-MM-DD HH:mm:ss'),
-                //     oldCardRoyaltyProgramId: item['oldCardRoyaltyProgramId'],
-                //     newCardRoyaltyProgramId: item['newCardRoyaltyProgramId']
-                // });
+                cardHistoryList.push({
+                    class: x['$class'],
+                    transactionId: x['transactionId'],
+                    transactionType: x['transactionType'],
+                    transactionInvoked: x['transactionInvoked'],
+                    participantInvoking: x['participantInvoking'],
+                    dateTime: new moment(x['transactionTimestamp']).format('YYYY-MM-DD HH:mm:ss'),
+                    identityUsed: x['identityUsed'],
+                });
 
-                let temp = Object.assign({
-                    dateTime: new moment(item['timestamp']).format('YYYY-MM-DD HH:mm:ss')
-                },x);
-                cardHistoryList.push(temp);
+                // let temp = Object.assign({
+                //     dateTime: new moment(x['transactionTimestamp']).format('YYYY-MM-DD HH:mm:ss')
+                // },x);
+                // cardHistoryList.push(temp);
             // }
 
         });

@@ -136,7 +136,7 @@ app.get('/history/card/:userId/:cardId', async (req,res) => {
     res.send(await Card.getCardHistory(userId,cardId));
 });
 
-app.get('history/historian', async(req,res) => {
+app.get('/history/historian', async(req,res) => {
     res.send(await composerHistorian.getAllHistorian());
 });
 
