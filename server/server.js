@@ -22,6 +22,7 @@ let {
 let composerCard = require('./../composer/card');
 let composerRoyaltyProgram = require('./../composer/royaltyProgram');
 let composerPoint = require('./../composer/point');
+let composerHistorian = require('./../composer/historian');
 
 let app = express();
 
@@ -133,6 +134,10 @@ app.get('/history/card/:userId/:cardId', async (req,res) => {
     let userId = req.params.userId;
     let cardId = req.params.cardId;
     res.send(await Card.getCardHistory(userId,cardId));
+});
+
+app.get('history/historian', async(req,res) => {
+    res.send(await composerHistorian.getAllHistorian());
 });
 
 /** partner **/
