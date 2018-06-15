@@ -191,7 +191,7 @@ var getCardHistory = async function (userId, cardId) {
         });
 
         cardHistoryList = cardHistoryList.filter((x) => {
-            return x.userId == userId && x.oldCardId == cardId;
+            return x.userId == userId && (x.oldCardId == cardId);
         });
         var sortTemp = _.orderBy(cardHistoryList, ['dateTime'], ['desc']);
         console.log('composer getCardHistory ',sortTemp);

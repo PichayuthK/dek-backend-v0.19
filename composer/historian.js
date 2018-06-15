@@ -12,28 +12,29 @@ var getAllHistorian = async function () {
         var queriedCards = await connection.query(cardQuery);
 
         await Connection.getDisconnection();
-
+	return Promise.resolve(queriedCards);
         var cardHistoryList = [];
-        console.log('queriedCards => ',queriedCards);
-        let count = -1;
+        //console.log('queriedCards => ',queriedCards);
+        let count = 0;
         queriedCards.forEach((x) => {
             if(count === 0){
-                console.log(x);
+                //console.log(x);
                 count += 1;
             }
             // var item = x['eventsEmitted'][0];
             // console.log(item);
             // if (item != null) {
-                cardHistoryList.push({
-                    class: x['$class'],
-                    transactionId: x['transactionId'],
-                    transactionType: x['transactionType'],
-                    transactionInvoked: x['transactionInvoked'],
-                    participantInvoking: x['participantInvoking'],
-                    dateTime: new moment(x['transactionTimestamp']).format('YYYY-MM-DD HH:mm:ss'),
-                    identityUsed: x['identityUsed'],
-                });
-
+//cardHistoryList.push(Serializer.toJSON(x));                
+//cardHistoryList.push({
+                  //  class: x['$class'],
+                   // transactionId: x['transactionId'],
+                    //transactionType: x['transactionType'],
+                    //transactionInvoked: x['transactionInvoked'],
+                    //participantInvoking: x['participantInvoking'],
+                    //dateTime: new moment(x['transactionTimestamp']).format('YYYY-MM-DD HH:mm:ss'),
+                    //identityUsed: x['identityUsed']
+//                });
+		
                 // let temp = Object.assign({
                 //     dateTime: new moment(x['transactionTimestamp']).format('YYYY-MM-DD HH:mm:ss')
                 // },x);
@@ -41,9 +42,10 @@ var getAllHistorian = async function () {
             // }
 
         });
-
+console.log('end cardHis');
+	console.log('cardHisList', cardHistoryList[0]);
         var sortTemp = _.orderBy(cardHistoryList, ['dateTime'], ['desc']);
-        console.log('composer getAllHistorian ',sortTemp);
+        //console.log('composer getAllHistorian ',sortTemp);
         return Promise.resolve(sortTemp);
 
     } catch (e) {
