@@ -1,1 +1,1 @@
-this is my node project with composer v.0.19v0.19
+this is my first nodejs project (version 2) with Hypereldger Composer v.0.19
